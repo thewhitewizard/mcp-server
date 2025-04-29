@@ -13,6 +13,7 @@ import (
 	"github.com/joho/godotenv"
 	"github.com/mark3labs/mcp-go/server"
 	"github.com/thewhitewizard/thegraph-mcp-server/internal/mcp"
+	"github.com/thewhitewizard/thegraph-mcp-server/pkg/chain"
 	"github.com/thewhitewizard/thegraph-mcp-server/pkg/thegraph"
 )
 
@@ -24,7 +25,8 @@ func main() {
 	// Define flags
 	useSSE := flag.Bool("sse", false, "Use SSE server mode (default is stdin/stdout)")
 	port := flag.String("port", "", "Port for SSE server (defaults to PORT env var or 4000)")
-	theGraphURL := flag.String("thegraph-url", "", "TheGraph URL")
+	theGraphURL := flag.String("thegraph-url", "", "TheGraph URL, default "+thegraph.DEFAULT_URL)
+	chainRPC := flag.String("rpc", "", "RPC for chain interaction, default "+chain.DEFAULT_URL)
 
 	flag.Parse()
 
@@ -38,6 +40,11 @@ func main() {
 		*useSSE = true
 	} else if useSSEEnv == "false" {
 		*useSSE = false
+	}
+
+	// If chainRPC flag not set, get from env or use default
+	if *chainRPC == "" {
+		*chainRPC = getEnv("CHAIN_RPC", chain.DEFAULT_URL)
 	}
 
 	// If theGraphURL flag not set, get from env or use default
@@ -60,8 +67,9 @@ func main() {
 		log.SetFlags(log.Ldate | log.Ltime)
 	}
 
-	// Initialize TheGraph client
-	client := thegraph.NewClient(*theGraphURL)
+	// Initialize clients
+	thegraphCient := thegraph.NewClient(*theGraphURL)
+	chainClient := chain.NewClient(*chainRPC)
 
 	// Create MCP server
 	mcpServer := server.NewMCPServer(
@@ -70,7 +78,7 @@ func main() {
 	)
 
 	// Register tools
-	mcp.RegisterTools(mcpServer, client)
+	mcp.RegisterTools(mcpServer, thegraphCient, chainClient)
 
 	if *useSSE {
 		// SSE server mode
