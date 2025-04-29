@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.0.1](https://github.com/thewhitewizard/mcp-server/compare/v1.0.0...v1.0.1) (2025-04-29)
+
+
+### Bug Fixes
+
+* changelog emojis ([#5](https://github.com/thewhitewizard/mcp-server/issues/5)) ([aa336f0](https://github.com/thewhitewizard/mcp-server/commit/aa336f064cac472b74dc349f4599104533105d66))
+
 ## 1.0.0 (2025-04-29)
 
 
