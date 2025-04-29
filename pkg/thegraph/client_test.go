@@ -33,6 +33,7 @@ func TestNewDefaultClient(t *testing.T) {
 	if client.baseURL != DEFAULT_URL {
 		t.Errorf("expected baseURL %s, got %s", DEFAULT_URL, client.baseURL)
 	}
+
 	if client.httpClient.Timeout != defaulHttpTimeout {
 		t.Errorf("expected timeout %s, got %s", defaulHttpTimeout, client.httpClient.Timeout)
 	}
@@ -41,6 +42,7 @@ func TestNewDefaultClient(t *testing.T) {
 func TestNewClient(t *testing.T) {
 	url := "http://example.com"
 	client := NewClient(url)
+
 	if client.baseURL != url {
 		t.Errorf("expected baseURL %s, got %s", url, client.baseURL)
 	}
@@ -74,9 +76,11 @@ func TestGetVouchersSuccess(t *testing.T) {
 	if err != nil {
 		t.Fatalf("expected no error, got %v", err)
 	}
+
 	if len(vouchers.Data.Vouchers) != 1 {
 		t.Fatalf("expected 1 voucher, got %d", len(vouchers.Data.Vouchers))
 	}
+
 	if vouchers.Data.Vouchers[0].ID != "1" {
 		t.Errorf("expected voucher ID '1', got '%s'", vouchers.Data.Vouchers[0].ID)
 	}
@@ -105,6 +109,7 @@ func TestFetchGraphQLDataRequestError(t *testing.T) {
 func TestFetchGraphQLDataReadError(t *testing.T) {
 	client := newMockedClient(func(req *http.Request) (*http.Response, error) {
 		r := io.NopCloser(&brokenReader{})
+
 		return &http.Response{
 			StatusCode: 200,
 			Body:       r,

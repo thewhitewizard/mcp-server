@@ -5,9 +5,9 @@ import (
 	"fmt"
 	"strconv"
 	"strings"
-	"time"
 
 	"github.com/mark3labs/mcp-go/mcp"
+	"github.com/thewhitewizard/thegraph-mcp-server/pkg/chain"
 	"github.com/thewhitewizard/thegraph-mcp-server/pkg/thegraph"
 )
 
@@ -26,13 +26,27 @@ func handleGetVouchers(_ context.Context, request mcp.CallToolRequest, client *t
 		}
 	}
 
-	return mcp.NewToolResultText(result + "\n"), nil
+	return mcp.NewToolResultText(result), nil
 }
 
-func formatVoucher(v thegraph.Voucher) string {
-	timestamp, _ := strconv.ParseInt(v.Expiration, 10, 64)
-	date := time.Unix(timestamp, 0)
+func handleGetLastBlock(ctx context.Context, _ mcp.CallToolRequest, client *chain.Client) (*mcp.CallToolResult, error) {
+	block, err := client.CurrentBlock(ctx)
+	if err != nil {
+		return nil, err
+	}
+	result := strconv.FormatUint(block, 10)
 
-	return fmt.Sprintf("ID=%s Type=%s Owner=%s Value=%s Balance=%s Expiration=%s",
-		v.ID, v.VoucherType.Desc, v.Owner.ID, v.Value, v.Balance, date.Format("2006-01-02 15:04:05 MST"))
+	return mcp.NewToolResultText(result), nil
+}
+
+func handleWalletInfo(ctx context.Context, request mcp.CallToolRequest, client *chain.Client) (*mcp.CallToolResult, error) {
+	wallet, _ := request.Params.Arguments["wallet"].(string)
+
+	balanceXRLC := client.GetBalance(ctx, wallet, chain.DECIMAL_18)
+	balanceSRLC := client.GetBalanceForToken(ctx, wallet, chain.BELLECOUR_PROXY_ADDR, chain.DECIMAL_9)
+	balanceLRLC := client.GetLockRLCBalance(ctx, wallet, chain.BELLECOUR_PROXY_ADDR, chain.DECIMAL_9)
+
+	result := fmt.Sprintf("xRLC=%s, sRLC:%s, lockRLC=%s", balanceXRLC, balanceSRLC, balanceLRLC)
+
+	return mcp.NewToolResultText(result), nil
 }
