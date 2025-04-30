@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.0.3](https://github.com/thewhitewizard/mcp-server/compare/v1.0.2...v1.0.3) (2025-04-30)
+
+
+### 🐞 Bug Fixes
+
+* update please release ([#9](https://github.com/thewhitewizard/mcp-server/issues/9)) ([8087cbf](https://github.com/thewhitewizard/mcp-server/commit/8087cbfb7f0a86690ee9460e796257557498d03a))
+
 ## [1.0.2](https://github.com/thewhitewizard/mcp-server/compare/v1.0.1...v1.0.2) (2025-04-29)
 
 
